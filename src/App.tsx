@@ -1,26 +1,32 @@
-import { useRef, useState, type ReactEventHandler, type ReactHTMLElement } from 'react'
+import { useEffect, useRef, useState, type ReactEventHandler, type ReactHTMLElement } from 'react'
 import './index.css'
 
 function App() {
 
   const [tasks, setTasks] = useState<string[]>([])
   const [a,setA]= useState<string>("");
-
-  console.log(tasks);
+  const [linethrough, islinethrough]=useState<boolean[]>([]);
 
   const check = useRef<HTMLInputElement>(null)
+  const para = useRef<HTMLInputElement>(null)
+  const rem = useRef<HTMLButtonElement>(null)
 
-  if(check.current?.firstChild?.checked){
-    
-    console.log(check.current.value)
+
+  function line_through(idx:number){
+    // islinethrough((e)=>[...e.idx,!e.b]);
+    islinethrough(linethrough[idx] = true)
+    console.log(para.current?.attributes)
+  }
+
+  function removeParent(){
+    console.log(rem.current?.parentElement);
+    rem.current?.parentElement?.remove();
   }
 
   function handlesubmit(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();
     setTasks((ele)=>[...ele, a]);
     setA("");
-    console.log(tasks)
-    // setTasks((ele)=>ele.push(e.target.value));
   }
   return (
     <>
@@ -32,17 +38,14 @@ function App() {
         <input type="text" placeholder='Add tasks' onChange={(e)=>setA(e.target.value)}/>
         <button type="submit" className='border p-2'>Add</button>
         </div>
-
-        {tasks.map((ele,idx)=>{
-          return<>
-          <p ref={check} key={idx}><input    type="checkbox" /> {ele}</p>
-          </>
-        })}
-
-        {/* <div>
-          <p className='p-2 m-1'><input type="checkbox"/> hi <span>x</span> </p>
-          <p className='p-2 m-1'><input type="checkbox" /> hi <span>x</span> </p>
-        </div> */}
+        {
+          tasks.map((ele,idx)=>{
+            return<div key={idx} className='flex gap-3'>
+            <input ref={check} onChange={()=>line_through(idx)} type="checkbox" /><p ref={para} key={idx} style={{textDecoration:linethrough[idx]?"line-through":"none"}}> {ele}</p>
+            <button ref={rem} onClick={()=>removeParent} type='button'>x</button>
+            </div>
+          })
+        }
       </form>
     </div>
      </div>
